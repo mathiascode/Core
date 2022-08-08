@@ -129,7 +129,7 @@ function HandleScoreboardPlayersCommand(Split, Player)
 			Response = SendMessage(Player, "/scoreboard players list <player>")
 		else
 			Response = SendMessage(Player, "List of scores for " .. TargetedPlayer .. ": ")
-			Scoreboard:ForEachObjective(listObjectiveofPlayer)
+			Scoreboard:ForEachObjective(ListPlayerObjective)
 		end
 	end
 
