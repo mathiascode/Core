@@ -2,7 +2,10 @@ function HandleKillCommand(Split, Player)
 	local Response
 
 	local KillPlayer = function(OtherPlayer)
-		OtherPlayer:TakeDamage(dtPlugin, nil, 1000, 1000, 0)
+		local Damage = 1000
+		local KnockbackAmount = 0
+
+		OtherPlayer:TakeDamage(dtPlugin, nil, Damage, Damage, KnockbackAmount)
 
 		if Split[2] then
 			Response = SendMessageSuccess(Player, "Successfully killed player \"" .. OtherPlayer:GetName() .. "\"")
