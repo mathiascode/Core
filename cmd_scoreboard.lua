@@ -22,20 +22,19 @@ local Slots =
 	["count"] = cScoreboard.dsCount,
 }
 
-local GlobalPlayer = nil
-local TargetedPlayer = nil
-local MultiLineResponse = {}
-
 function HandleScoreboardObjectivesCommand(Split, Player)
 	local Response
 	local Scoreboard
-	MultiLineResponse = {}
+	local MultiLineResponse = {}
+
 	if Player then
 		Scoreboard = Player:GetWorld():GetScoreBoard()
-		GlobalPlayer = Player
 	else
 		Scoreboard = cRoot:Get():GetDefaultWorld():GetScoreBoard()
-		GlobalPlayer = nil
+	end
+
+	local SendListObjectives = function(Objective)
+		table.insert(MultiLineResponse, SendMessage(Player, Objective:GetDisplayName() .. " -> " .. Objective:GetName() .. ": " .. get_key_for_value(Criterias, Objective:GetType())))
 	end
 
 	if not Split[3] then
@@ -101,17 +100,25 @@ end
 function HandleScoreboardPlayersCommand(Split, Player)
 	local Scoreboard
 	local Response
-	MultiLineResponse = {}
+	local TargetedPlayer = Split[4]
+	local MultiLineResponse = {}
 
 	if Player then
 		Scoreboard = Player:GetWorld():GetScoreBoard()
-		GlobalPlayer = Player
 	else
 		Scoreboard = cRoot:Get():GetDefaultWorld():GetScoreBoard()
-		GlobalPlayer = nil
 	end
 
-	TargetedPlayer = Split[4]
+	local ListPlayerObjective = function(Objective)
+		local Score = Objective:GetScore(TargetedPlayer)
+		if Score then
+			table.insert(MultiLineResponse,SendMessage(GlobalPlayer, Objective:GetDisplayName() .. " -> " .. Score))
+		end
+	end
+
+	local ResetAllObjectives = function(Objective)
+		Objetive:ResetScore(TargetedPlayer)
+	end
 
 	if not Split[3] then
 		Response = SendMessageFailure(Player, "list, reset, get, set, add, remove, operation")
@@ -229,21 +236,6 @@ function HandleScoreboardPlayersCommand(Split, Player)
 
 	table.insert(MultiLineResponse, 1, Response) -- Add the response of the command as first line
 	return true, table.concat(MultiLineResponse, "\n")
-end
-
-function listObjectiveofPlayer(Objective)
-	local Score = Objective:GetScore(TargetedPlayer)
-	if Score then
-		table.insert(MultiLineResponse,SendMessage(GlobalPlayer, Objective:GetDisplayName() .. " -> " .. Score))
-	end
-end
-
-function ResetAllObjectives(Objective)
-	Objetive:ResetScore(TargetedPlayer)
-end
-
-function SendListObjectives(Objective)
-	table.insert(MultiLineResponse, SendMessage(GlobalPlayer, Objective:GetDisplayName() .. " -> " .. Objective:GetName() .. ": " .. get_key_for_value(Criterias, Objective:GetType())))
 end
 
 
